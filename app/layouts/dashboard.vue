@@ -28,7 +28,7 @@ defineShortcuts({
     >
       <template #header>
         <div class="p-4 flex items-center gap-2">
-          <span class="font-semibold text-lg">Neuron Mail</span>
+          <span class="font-bold tracking-tight text-lg">Neuron Mail</span>
         </div>
       </template>
 
