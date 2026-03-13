@@ -28,8 +28,8 @@ const primaryParticipant = computed(() => props.thread.participants[0] ?? { emai
 <template>
   <button
     type="button"
-    class="w-full text-left px-4 py-3 hover:bg-neutral-100 dark:hover:bg-neutral-800/50 transition-colors border-b border-default"
-    :class="{ 'bg-neutral-100': selected }"
+    class="w-full text-left px-4 py-3 hover:bg-neutral-100 transition-colors border-b border-default"
+    :class="{ 'bg-neutral-200': selected }"
     data-testid="mail-thread-row"
     @click="emit('select', thread.id)"
   >
