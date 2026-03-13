@@ -28,16 +28,8 @@ defineShortcuts({
       :max-size="30"
     >
       <template #header>
-        <div class="p-4 flex items-center justify-between">
+        <div class="p-4 flex items-center">
           <span class="font-bold tracking-tight text-lg">Neuron Mail</span>
-          <UButton
-            :icon="colorMode.value === 'dark' ? 'i-lucide-sun' : 'i-lucide-moon'"
-            color="neutral"
-            variant="ghost"
-            size="sm"
-            aria-label="Toggle theme"
-            @click="colorMode.preference = colorMode.value === 'dark' ? 'light' : 'dark'"
-          />
         </div>
       </template>
 
@@ -91,10 +83,18 @@ defineShortcuts({
         resizable
       >
         <template #header>
-          <div class="px-4 py-3 border-b border-default">
+          <div class="px-4 py-3 border-b border-default flex items-center justify-between">
             <h3 class="font-medium text-sm text-muted">
               AI Copilot
             </h3>
+            <UButton
+              :icon="colorMode.value === 'dark' ? 'i-lucide-sun' : 'i-lucide-moon'"
+              color="neutral"
+              variant="ghost"
+              size="sm"
+              aria-label="Toggle theme"
+              @click="colorMode.preference = colorMode.value === 'dark' ? 'light' : 'dark'"
+            />
           </div>
         </template>
 
