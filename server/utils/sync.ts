@@ -127,7 +127,7 @@ export async function runInitialSync(event: H3Event): Promise<number> {
     count++
     // Track highest historyId from fetched threads
     const hid = full.data.historyId
-    if (hid && (!latestHistoryId || hid > latestHistoryId)) {
+    if (hid && (!latestHistoryId || Number(hid) > Number(latestHistoryId))) {
       latestHistoryId = hid
     }
   }

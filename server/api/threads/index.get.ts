@@ -1,4 +1,4 @@
-import { eq, desc, sql } from 'drizzle-orm'
+import { eq, desc } from 'drizzle-orm'
 import { getDb } from '../../db'
 import { threads } from '../../db/schema'
 
@@ -16,22 +16,26 @@ export default defineEventHandler(async (event) => {
   let rows
 
   if (labelFilter) {
-    // Join with json_each to filter by label (SQLite JSON array)
-    const rawSql = sql`
-      SELECT t.*
-      FROM threads t, json_each(t.labels) je
-      WHERE je.value = ${labelFilter}
-      ${unreadFilter !== undefined ? sql`AND t.unread = ${unreadFilter}` : sql``}
-      ORDER BY t.last_message_at DESC
-      LIMIT ${limit} OFFSET ${offset}
-    `
-    rows = db.all(rawSql) as typeof threads.$inferSelect[]
+    // Fetch all threads and filter in JS to avoid snake_case/camelCase mismatch
+    // from raw SQL returning SQLite column names instead of Drizzle field names.
+    // Max dataset is bounded (INITIAL_SYNC_LIMIT = 200) so this is acceptable.
+    rows = db.select().from(threads)
+      .orderBy(desc(threads.lastMessageAt))
+      .all()
+      .filter(t => {
+        const labels: string[] = JSON.parse(t.labels)
+        const matchesLabel = labels.includes(labelFilter)
+        const matchesUnread = unreadFilter === undefined || t.unread === unreadFilter
+        return matchesLabel && matchesUnread
+      })
+      .slice(offset, offset + limit)
   } else {
-    rows = await db.select().from(threads)
+    rows = db.select().from(threads)
       .where(unreadFilter !== undefined ? eq(threads.unread, unreadFilter) : undefined)
       .orderBy(desc(threads.lastMessageAt))
       .limit(limit)
       .offset(offset)
+      .all()
   }
 
   const result = rows.map(t => ({

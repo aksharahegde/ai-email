@@ -10,6 +10,9 @@ export default defineEventHandler(async (event) => {
 
   const db = getDb()
 
+  const existing = db.select({ id: smartInboxItems.id }).from(smartInboxItems).where(eq(smartInboxItems.id, id)).get()
+  if (!existing) throw createError({ statusCode: 404, message: 'Smart inbox not found' })
+
   db.delete(smartInboxResults).where(eq(smartInboxResults.itemId, id)).run()
   db.delete(smartInboxItems).where(eq(smartInboxItems.id, id)).run()
 
