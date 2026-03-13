@@ -118,19 +118,22 @@ export async function runInitialSync(event: H3Event): Promise<number> {
   const threadList = listRes.data.threads ?? []
   let count = 0
 
+  let latestHistoryId: string | null = null
+
   for (const t of threadList) {
     if (!t.id) continue
     const full = await gmail.users.threads.get({ userId: 'me', id: t.id, format: 'full' })
     await upsertThreadData(db, full.data)
     count++
+    // Track highest historyId from fetched threads
+    const hid = full.data.historyId
+    if (hid && (!latestHistoryId || hid > latestHistoryId)) {
+      latestHistoryId = hid
+    }
   }
 
-  // Save historyId from the first full thread fetch
-  if (threadList.length > 0) {
-    const first = await gmail.users.threads.get({ userId: 'me', id: threadList[0].id!, format: 'minimal' })
-    if (first.data.historyId) {
-      await setSyncState('gmail_history_id', first.data.historyId)
-    }
+  if (latestHistoryId) {
+    await setSyncState('gmail_history_id', latestHistoryId)
   }
 
   return count
@@ -158,7 +161,8 @@ export async function runIncrementalSync(event: H3Event): Promise<number> {
   } catch (err: any) {
     if (err?.code === 404 || err?.status === 404) {
       // History expired — full re-sync
-      await setSyncState('gmail_history_id', '')
+      const db = getDb()
+      db.delete(syncState).where(eq(syncState.key, 'gmail_history_id')).run()
       return runInitialSync(event)
     }
     throw err
