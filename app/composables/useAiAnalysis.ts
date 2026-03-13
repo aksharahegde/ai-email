@@ -3,11 +3,11 @@ import type { ThreadAnalysis, AiTag } from '~/types/mail'
 export function useAiAnalyze() {
   return useFetch<{ tags: AiTag[] }>('/api/ai/analyze', {
     method: 'POST',
-    body: {} as { subject: string; preview: string }
+    body: {} as { subject: string, preview: string }
   })
 }
 
-export function useAiSummarize(messages: Ref<Array<{ from: string; body: string }>>) {
+export function useAiSummarize(messages: Ref<Array<{ from: string, body: string }>>) {
   return useFetch<{ summary: string[] }>('/api/ai/summarize', {
     method: 'POST',
     body: computed(() => ({ messages: messages.value })),
@@ -33,7 +33,7 @@ export function useAiImprove(text: Ref<string>, mode: Ref<'shorter' | 'professio
   })
 }
 
-export async function fetchAiSummary(messages: Array<{ from: string; body: string }>): Promise<string[]> {
+export async function fetchAiSummary(messages: Array<{ from: string, body: string }>): Promise<string[]> {
   const { summary } = await $fetch<{ summary: string[] }>('/api/ai/summarize', {
     method: 'POST',
     body: { messages }

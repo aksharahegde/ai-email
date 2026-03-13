@@ -7,8 +7,8 @@ function parseThreadTimestamp(t: MailThread): MailThread {
   }
 }
 
-export function useGmailThreads(query?: { maxResults?: number; q?: string; labelIds?: string[]; pageToken?: string }) {
-  const { data, error, refresh, status } = useFetch<{ threads: MailThread[]; nextPageToken?: string }>('/api/gmail/threads', {
+export function useGmailThreads(query?: { maxResults?: number, q?: string, labelIds?: string[], pageToken?: string }) {
+  const { data, error, refresh, status } = useFetch<{ threads: MailThread[], nextPageToken?: string }>('/api/gmail/threads', {
     query: query as Record<string, string | number | string[] | undefined>,
     default: () => ({ threads: [], nextPageToken: undefined })
   })
@@ -22,7 +22,7 @@ export function useGmailThread(threadId: Ref<string | null> | string | null) {
     id: string
     messages: MailMessage[]
     subject: string
-    participants: Array<{ email: string; name: string }>
+    participants: Array<{ email: string, name: string }>
   }>(() => (id.value ? `/api/gmail/thread/${id.value}` : null), {
     default: () => ({ id: '', messages: [], subject: '', participants: [] })
   })
@@ -41,7 +41,7 @@ export function useGmailThread(threadId: Ref<string | null> | string | null) {
 }
 
 export function useGmailLabels() {
-  return useFetch<{ labels: Array<{ id: string; name: string; type?: string }> }>('/api/gmail/labels', {
+  return useFetch<{ labels: Array<{ id: string, name: string, type?: string }> }>('/api/gmail/labels', {
     default: () => ({ labels: [] })
   })
 }

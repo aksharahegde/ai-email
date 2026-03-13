@@ -3,7 +3,7 @@ definePageMeta({
   layout: 'dashboard'
 })
 
-const { data } = useFetch<{ drafts: Array<{ id: string; to: string; subject: string; preview: string }> }>('/api/gmail/drafts', {
+const { data } = useFetch<{ drafts: Array<{ id: string, to: string, subject: string, preview: string }> }>('/api/gmail/drafts', {
   default: () => ({ drafts: [] })
 })
 
@@ -24,9 +24,15 @@ const drafts = computed(() => data.value?.drafts ?? [])
         :key="d.id"
         class="cursor-pointer hover:bg-neutral-50 dark:hover:bg-neutral-800/50"
       >
-        <p class="font-medium">{{ d.subject }}</p>
-        <p class="text-sm text-muted">To: {{ d.to }}</p>
-        <p class="text-sm text-muted truncate">{{ d.preview }}</p>
+        <p class="font-medium">
+          {{ d.subject }}
+        </p>
+        <p class="text-sm text-muted">
+          To: {{ d.to }}
+        </p>
+        <p class="text-sm text-muted truncate">
+          {{ d.preview }}
+        </p>
       </UCard>
     </div>
     <UEmpty

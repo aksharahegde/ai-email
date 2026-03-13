@@ -1,6 +1,6 @@
 <script setup lang="ts">
 defineProps<{
-  items: Array<{ text: string; due?: string }>
+  items: Array<{ text: string, due?: string }>
   threadId: string
 }>()
 </script>
@@ -17,7 +17,9 @@ defineProps<{
         class="flex items-center justify-between gap-2 p-2 rounded-lg bg-neutral-100 dark:bg-neutral-800/50"
       >
         <div>
-          <p class="text-sm font-medium">{{ item.text }}</p>
+          <p class="text-sm font-medium">
+            {{ item.text }}
+          </p>
           <p
             v-if="item.due"
             class="text-xs text-muted"

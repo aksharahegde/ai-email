@@ -38,7 +38,10 @@ const threads = computed(() => props.threads ?? [])
       v-else
       class="p-8 text-center text-muted text-sm"
     >
-      <UIcon name="i-lucide-inbox" class="w-12 h-12 mx-auto mb-4 opacity-50" />
+      <UIcon
+        name="i-lucide-inbox"
+        class="w-12 h-12 mx-auto mb-4 opacity-50"
+      />
       <p>No emails</p>
     </div>
   </UScrollArea>

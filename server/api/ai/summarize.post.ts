@@ -1,7 +1,7 @@
 import { getAiModel } from '../../utils/ai'
 
 export default defineEventHandler(async (event) => {
-  const body = await readBody<{ messages: Array<{ from: string; body: string }> }>(event)
+  const body = await readBody<{ messages: Array<{ from: string, body: string }> }>(event)
   if (!body?.messages?.length) {
     throw createError({ statusCode: 400, message: 'messages required' })
   }

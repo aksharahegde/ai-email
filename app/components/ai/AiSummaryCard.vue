@@ -12,7 +12,10 @@ defineProps<{
   >
     <template #header>
       <div class="flex items-center gap-2">
-        <UIcon name="i-lucide-sparkles" class="text-neutral-400" />
+        <UIcon
+          name="i-lucide-sparkles"
+          class="text-neutral-400"
+        />
         <span class="font-medium text-sm">AI Summary</span>
       </div>
     </template>

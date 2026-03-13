@@ -53,7 +53,7 @@ export default defineEventHandler(async (event) => {
       preview = body.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 100)
     }
 
-    let tags: AiTag[] = []
+    const tags: AiTag[] = []
     if (subject.toLowerCase().includes('invoice') || subject.toLowerCase().includes('payment')) {
       tags.push('action-required')
     } else if (subject.toLowerCase().includes('?')) {

@@ -30,7 +30,7 @@ export interface MailMessage {
 
 export interface ThreadAnalysis {
   summary: string[]
-  actionItems: { text: string; due?: string }[]
+  actionItems: { text: string, due?: string }[]
   questions: string[]
   decisions: string[]
   people: Array<{

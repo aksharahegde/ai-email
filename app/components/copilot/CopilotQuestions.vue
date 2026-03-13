@@ -16,7 +16,9 @@ defineProps<{
         :key="i"
         class="p-2 rounded-lg bg-amber-50 dark:bg-amber-950/30 text-sm"
       >
-        <p class="mb-2">{{ q }}</p>
+        <p class="mb-2">
+          {{ q }}
+        </p>
         <UButton
           size="xs"
           variant="soft"

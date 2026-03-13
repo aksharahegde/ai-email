@@ -3,7 +3,7 @@ definePageMeta({
   layout: 'dashboard'
 })
 
-type Task = { id: string; text: string; due?: string | null; source: string; done: boolean }
+type Task = { id: string, text: string, due?: string | null, source: string, done: boolean }
 
 const { data, status } = useFetch<{ tasks: Task[] }>('/api/ai/tasks-from-emails', {
   default: () => ({ tasks: [] })

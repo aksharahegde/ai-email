@@ -15,7 +15,10 @@ defineProps<{
         :key="i"
         class="flex gap-2"
       >
-        <UIcon name="i-lucide-gavel" class="w-4 h-4 text-violet-500 shrink-0 mt-0.5" />
+        <UIcon
+          name="i-lucide-gavel"
+          class="w-4 h-4 text-violet-500 shrink-0 mt-0.5"
+        />
         <span>{{ d }}</span>
       </li>
     </ul>

@@ -2,7 +2,7 @@ import type { AiTag } from '../../../../app/types/mail'
 import { getAiModel } from '../../utils/ai'
 
 export default defineEventHandler(async (event) => {
-  const body = await readBody<{ subject: string; preview: string }>(event)
+  const body = await readBody<{ subject: string, preview: string }>(event)
   if (!body?.subject && !body?.preview) {
     throw createError({ statusCode: 400, message: 'subject or preview required' })
   }

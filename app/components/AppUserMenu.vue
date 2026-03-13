@@ -14,7 +14,10 @@ const menuItems = computed(() => [
 </script>
 
 <template>
-  <UDropdownMenu :items="menuItems" class="w-full">
+  <UDropdownMenu
+    :items="menuItems"
+    class="w-full"
+  >
     <UButton
       color="neutral"
       variant="ghost"

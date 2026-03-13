@@ -8,12 +8,12 @@ type Provider = 'ollama' | 'openai' | 'anthropic' | 'google' | 'groq'
 const provider = ref<Provider>('ollama')
 const ollamaUrl = ref('http://localhost:11434')
 const ollamaConnected = ref(false)
-const ollamaModels = ref<Array<{ name: string; size: number }>>([])
+const ollamaModels = ref<Array<{ name: string, size: number }>>([])
 const ollamaLoading = ref(false)
 const selectedModel = ref('')
 const saveLoading = ref(false)
 
-const { data: savedSettings } = useFetch<{ provider?: string; model?: string; ollamaUrl?: string }>('/api/settings/ai')
+const { data: savedSettings } = useFetch<{ provider?: string, model?: string, ollamaUrl?: string }>('/api/settings/ai')
 
 watch(savedSettings, (s) => {
   if (s) {
@@ -27,7 +27,7 @@ async function checkOllamaStatus() {
   ollamaLoading.value = true
   ollamaConnected.value = false
   try {
-    const res = await $fetch<{ connected: boolean; models: Array<{ name: string; size: number }> }>('/api/ollama/status', {
+    const res = await $fetch<{ connected: boolean, models: Array<{ name: string, size: number }> }>('/api/ollama/status', {
       query: { url: ollamaUrl.value }
     })
     ollamaConnected.value = res.connected
@@ -46,7 +46,7 @@ async function checkOllamaStatus() {
 async function fetchOllamaModels() {
   ollamaLoading.value = true
   try {
-    const res = await $fetch<{ models: Array<{ name: string; size: number }> }>('/api/ollama/models', {
+    const res = await $fetch<{ models: Array<{ name: string, size: number }> }>('/api/ollama/models', {
       query: { url: ollamaUrl.value }
     })
     ollamaModels.value = res.models

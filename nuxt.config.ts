@@ -20,16 +20,6 @@ export default defineNuxtConfig({
 
   css: ['~/assets/css/main.css'],
 
-  routeRules: {
-    '/inbox': { ssr: false },
-    '/inbox/**': { ssr: false },
-    '/priority': { ssr: false },
-    '/tasks': { ssr: false },
-    '/settings/**': { ssr: false }
-  },
-
-  compatibilityDate: '2025-01-15',
-
   runtimeConfig: {
     oauth: {
       google: {
@@ -43,6 +33,16 @@ export default defineNuxtConfig({
       ollamaUrl: process.env.OLLAMA_BASE_URL || 'http://localhost:11434'
     }
   },
+
+  routeRules: {
+    '/inbox': { ssr: false },
+    '/inbox/**': { ssr: false },
+    '/priority': { ssr: false },
+    '/tasks': { ssr: false },
+    '/settings/**': { ssr: false }
+  },
+
+  compatibilityDate: '2025-01-15',
 
   eslint: {
     config: {

@@ -3,7 +3,7 @@ import type { H3Event } from 'h3'
 
 export async function getGmailClient(event: H3Event) {
   const session = await requireUserSession(event)
-  const secure = (session as { secure?: { accessToken: string; refreshToken?: string } }).secure
+  const secure = (session as { secure?: { accessToken: string, refreshToken?: string } }).secure
   if (!secure?.accessToken) {
     throw createError({ statusCode: 401, message: 'No Gmail access token' })
   }
@@ -28,7 +28,7 @@ function decodeBase64Url(str: string): string {
   return Buffer.from(base64, 'base64').toString('utf-8')
 }
 
-export function parseEmailAddress(header: string | undefined): { name: string; email: string } {
+export function parseEmailAddress(header: string | undefined): { name: string, email: string } {
   if (!header) return { name: '', email: '' }
   const match = header.match(/^(?:"?([^"]*)"?\s*)?<?([^>]+)>?$/)
   if (match) {
@@ -39,7 +39,7 @@ export function parseEmailAddress(header: string | undefined): { name: string; e
   return { name: header, email: header }
 }
 
-export function extractBody(payload: { body?: { data?: string }; parts?: Array<{ body?: { data?: string }; mimeType?: string }> }): string {
+export function extractBody(payload: { body?: { data?: string }, parts?: Array<{ body?: { data?: string }, mimeType?: string }> }): string {
   if (payload.body?.data) {
     return decodeBase64Url(payload.body.data)
   }
@@ -52,6 +52,6 @@ export function extractBody(payload: { body?: { data?: string }; parts?: Array<{
   return ''
 }
 
-export function getHeader(headers: Array<{ name?: string; value?: string }> | undefined, name: string): string | undefined {
+export function getHeader(headers: Array<{ name?: string, value?: string }> | undefined, name: string): string | undefined {
   return headers?.find(h => h.name?.toLowerCase() === name.toLowerCase())?.value
 }

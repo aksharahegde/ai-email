@@ -70,7 +70,7 @@ export default defineEventHandler(async (event) => {
     }))
   )
 
-  const tasks: Array<{ id: string; text: string; due?: string; source: string; done: boolean }> = []
+  const tasks: Array<{ id: string, text: string, due?: string, source: string, done: boolean }> = []
   let taskId = 0
 
   for (let i = 0; i < threads.length; i++) {

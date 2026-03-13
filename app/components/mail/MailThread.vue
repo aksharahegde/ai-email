@@ -4,7 +4,7 @@ import type { MailMessage as MailMessageType } from '~/types/mail'
 const props = defineProps<{
   threadId: string
   subject: string
-  participants: Array<{ email: string; name: string }>
+  participants: Array<{ email: string, name: string }>
   timestamp: Date
 }>()
 
@@ -62,7 +62,10 @@ function formatDateTime(date: Date) {
       </div>
     </div>
 
-    <AiSummaryCard v-if="aiSummary.length" :summary="aiSummary" />
+    <AiSummaryCard
+      v-if="aiSummary.length"
+      :summary="aiSummary"
+    />
 
     <div
       v-if="threadStatus === 'pending'"

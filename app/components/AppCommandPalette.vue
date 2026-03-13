@@ -11,7 +11,7 @@ const emit = defineEmits<{
 
 const open = computed({
   get: () => props.open ?? false,
-  set: (v) => emit('update:open', v)
+  set: v => emit('update:open', v)
 })
 
 const router = useRouter()
@@ -99,11 +99,11 @@ const groups: CommandPaletteGroup[] = [
     <template #content>
       <div class="p-0">
         <UCommandPalette
-        :groups="groups"
-        placeholder="Search commands..."
-        class="border-0"
-        @update:model-value="open = false"
-      />
+          :groups="groups"
+          placeholder="Search commands..."
+          class="border-0"
+          @update:model-value="open = false"
+        />
       </div>
     </template>
   </UModal>

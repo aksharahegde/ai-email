@@ -11,7 +11,7 @@ const emit = defineEmits<{
 
 const open = computed({
   get: () => props.open ?? false,
-  set: (v) => emit('update:open', v)
+  set: v => emit('update:open', v)
 })
 
 const to = ref('')
@@ -164,7 +164,9 @@ async function send() {
           <template #header>
             <span class="text-sm font-medium">Suggested Reply</span>
           </template>
-          <p class="text-sm mb-4">{{ aiSuggestion }}</p>
+          <p class="text-sm mb-4">
+            {{ aiSuggestion }}
+          </p>
           <div class="flex gap-2">
             <UButton
               size="sm"

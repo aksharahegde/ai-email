@@ -24,7 +24,9 @@ defineProps<{
           {{ p.name.charAt(0) }}
         </UAvatar>
         <div class="min-w-0 flex-1">
-          <p class="font-medium text-sm">{{ p.name }}</p>
+          <p class="font-medium text-sm">
+            {{ p.name }}
+          </p>
           <p
             v-if="p.company"
             class="text-xs text-muted"

@@ -5,12 +5,12 @@ const props = defineProps<{
   tag: AiTag
 }>()
 
-const tagConfig: Record<AiTag, { label: string; color: 'error' | 'warning' | 'blue' | 'purple' | 'neutral' }> = {
+const tagConfig: Record<AiTag, { label: string, color: 'error' | 'warning' | 'blue' | 'purple' | 'neutral' }> = {
   'action-required': { label: 'Action Required', color: 'error' },
-  'question':        { label: 'Question',         color: 'warning' },
-  'decision':        { label: 'Decision',          color: 'blue' },
-  'meeting':         { label: 'Meeting',           color: 'purple' },
-  'fyi':             { label: 'FYI',               color: 'neutral' }
+  'question': { label: 'Question', color: 'warning' },
+  'decision': { label: 'Decision', color: 'blue' },
+  'meeting': { label: 'Meeting', color: 'purple' },
+  'fyi': { label: 'FYI', color: 'neutral' }
 }
 
 const config = computed(() => tagConfig[props.tag])
