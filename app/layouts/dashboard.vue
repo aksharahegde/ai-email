@@ -75,12 +75,7 @@ defineShortcuts({
       </UDashboardPanel>
 
       <UDashboardPanel
-        id="mail-copilot"
         class="hidden lg:flex"
-        :min-size="25"
-        :default-size="35"
-        :max-size="50"
-        resizable
       >
         <template #header>
           <div class="px-4 py-3 border-b border-default flex items-center justify-between">
