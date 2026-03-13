@@ -44,8 +44,8 @@ defineShortcuts({
       <UDashboardPanel
         id="mail-center"
         :min-size="35"
-        :default-size="50"
-        :max-size="70"
+        :default-size="65"
+        :max-size="75"
         resizable
       >
         <template #header>
@@ -77,9 +77,9 @@ defineShortcuts({
       <UDashboardPanel
         id="mail-copilot"
         class="hidden lg:flex"
-        :min-size="22"
-        :default-size="30"
-        :max-size="45"
+        :min-size="25"
+        :default-size="35"
+        :max-size="50"
         resizable
       >
         <template #header>
