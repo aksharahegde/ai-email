@@ -4,6 +4,7 @@ import type { MailThread } from '~/types/mail'
 const props = defineProps<{
   thread: MailThread
   selected?: boolean
+  summary?: string
 }>()
 
 const emit = defineEmits<{
@@ -23,6 +24,7 @@ function formatTime(date: Date) {
 }
 
 const primaryParticipant = computed(() => props.thread.participants[0] ?? { email: '', name: 'Unknown' })
+const displaySnippet = computed(() => props.summary ?? props.thread.snippet)
 </script>
 
 <template>
@@ -58,18 +60,8 @@ const primaryParticipant = computed(() => props.thread.participants[0] ?? { emai
           {{ thread.subject }}
         </p>
         <p class="truncate text-sm text-muted">
-          {{ thread.preview }}
+          {{ displaySnippet }}
         </p>
-        <div
-          v-if="thread.tags.length"
-          class="flex flex-wrap gap-1 mt-1"
-        >
-          <MailAiTag
-            v-for="tag in thread.tags"
-            :key="tag"
-            :tag="tag"
-          />
-        </div>
       </div>
       <div
         v-if="thread.unread"

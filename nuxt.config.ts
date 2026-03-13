@@ -39,7 +39,8 @@ export default defineNuxtConfig({
     '/inbox/**': { ssr: false },
     '/priority': { ssr: false },
     '/tasks': { ssr: false },
-    '/settings/**': { ssr: false }
+    '/settings/**': { ssr: false },
+    '/smart-inbox/**': { ssr: false }
   },
 
   compatibilityDate: '2025-01-15',

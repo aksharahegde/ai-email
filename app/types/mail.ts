@@ -10,10 +10,9 @@ export interface MailThread {
   id: string
   participants: MailParticipant[]
   subject: string
-  preview: string
+  snippet: string
   timestamp: Date
   unread: boolean
-  tags: AiTag[]
   messageCount: number
 }
 

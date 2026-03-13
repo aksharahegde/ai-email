@@ -45,3 +45,31 @@ export function useGmailLabels() {
     default: () => ({ labels: [] })
   })
 }
+
+// Reads from local DB instead of Gmail API directly
+export function useThreads(query?: { label?: string, unread?: '1', limit?: number, offset?: number }) {
+  const { data, error, refresh, status } = useFetch<{
+    threads: Array<{
+      id: string
+      subject: string
+      snippet: string
+      participants: { name: string, email: string }[]
+      unread: boolean
+      messageCount: number
+      lastMessageAt: number
+      syncedAt: number
+    }>
+  }>('/api/threads', {
+    query: query as Record<string, string | number | undefined>,
+    default: () => ({ threads: [] })
+  })
+
+  const threads = computed(() =>
+    (data.value?.threads ?? []).map(t => ({
+      ...t,
+      timestamp: new Date(t.lastMessageAt * 1000)
+    }))
+  )
+
+  return { data, error, refresh, status, threads }
+}
