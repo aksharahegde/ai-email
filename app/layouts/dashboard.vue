@@ -53,13 +53,6 @@ defineShortcuts({
             <template #left>
               <MailSearch />
               <UButton
-                :icon="colorMode.value === 'dark' ? 'i-lucide-sun' : 'i-lucide-moon'"
-                color="neutral"
-                variant="ghost"
-                aria-label="Toggle theme"
-                @click="colorMode.preference = colorMode.value === 'dark' ? 'light' : 'dark'"
-              />
-              <UButton
                 icon="i-lucide-command"
                 color="neutral"
                 variant="ghost"
@@ -74,6 +67,15 @@ defineShortcuts({
               >
                 Compose
               </UButton>
+            </template>
+            <template #right>
+              <UButton
+                :icon="colorMode.value === 'dark' ? 'i-lucide-sun' : 'i-lucide-moon'"
+                color="neutral"
+                variant="ghost"
+                aria-label="Toggle theme"
+                @click="colorMode.preference = colorMode.value === 'dark' ? 'light' : 'dark'"
+              />
             </template>
           </UDashboardNavbar>
         </template>
