@@ -28,8 +28,16 @@ defineShortcuts({
       :max-size="30"
     >
       <template #header>
-        <div class="p-4 flex items-center gap-2">
+        <div class="p-4 flex items-center justify-between">
           <span class="font-bold tracking-tight text-lg">Neuron Mail</span>
+          <UButton
+            :icon="colorMode.value === 'dark' ? 'i-lucide-sun' : 'i-lucide-moon'"
+            color="neutral"
+            variant="ghost"
+            size="sm"
+            aria-label="Toggle theme"
+            @click="colorMode.preference = colorMode.value === 'dark' ? 'light' : 'dark'"
+          />
         </div>
       </template>
 
@@ -67,15 +75,6 @@ defineShortcuts({
               >
                 Compose
               </UButton>
-            </template>
-            <template #right>
-              <UButton
-                :icon="colorMode.value === 'dark' ? 'i-lucide-sun' : 'i-lucide-moon'"
-                color="neutral"
-                variant="ghost"
-                aria-label="Toggle theme"
-                @click="colorMode.preference = colorMode.value === 'dark' ? 'light' : 'dark'"
-              />
             </template>
           </UDashboardNavbar>
         </template>
