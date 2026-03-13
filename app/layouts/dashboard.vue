@@ -2,6 +2,7 @@
 const selectedThreadId = ref<string | null>(null)
 const composeOpen = ref(false)
 const commandPaletteOpen = ref(false)
+const colorMode = useColorMode()
 
 provide('mail:selectedThread', selectedThreadId as Ref<string | null>)
 provide('mail:composeOpen', composeOpen as Ref<boolean>)
@@ -51,6 +52,13 @@ defineShortcuts({
           <UDashboardNavbar>
             <template #left>
               <MailSearch />
+              <UButton
+                :icon="colorMode.value === 'dark' ? 'i-lucide-sun' : 'i-lucide-moon'"
+                color="neutral"
+                variant="ghost"
+                aria-label="Toggle theme"
+                @click="colorMode.preference = colorMode.value === 'dark' ? 'light' : 'dark'"
+              />
               <UButton
                 icon="i-lucide-command"
                 color="neutral"
