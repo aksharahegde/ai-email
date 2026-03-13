@@ -25,6 +25,8 @@
     "@solar-icons/nuxt": "1.2.0",
     "@vueuse/nuxt": "14.2.1",
     "ai": "^6.0.116",
+    "better-sqlite3": "^12.6.2",
+    "drizzle-orm": "^0.45.1",
     "evlog": "2.5.0",
     "googleapis": "^171.4.0",
     "nuxt": "^4.4.2",
@@ -38,6 +40,8 @@
   },
   "devDependencies": {
     "@nuxt/eslint": "^1.15.2",
+    "@types/better-sqlite3": "^7.6.13",
+    "drizzle-kit": "^0.31.9",
     "eslint": "^10.0.3",
     "typescript": "^5.9.3",
     "vue-tsc": "^3.2.5"
