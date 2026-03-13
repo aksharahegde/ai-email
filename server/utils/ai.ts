@@ -1,0 +1,45 @@
+import type { H3Event } from 'h3'
+import { generateText } from 'ai'
+import { ollama } from 'ollama-ai-provider'
+import { openai } from '@ai-sdk/openai'
+import { anthropic } from '@ai-sdk/anthropic'
+import { google } from '@ai-sdk/google'
+import { groq } from '@ai-sdk/groq'
+
+type Provider = 'ollama' | 'openai' | 'anthropic' | 'google' | 'groq'
+
+function getProvider(provider: Provider, modelId: string, config: Record<string, string>) {
+  switch (provider) {
+    case 'ollama':
+      return ollama(modelId, { baseURL: config.ollamaUrl || 'http://localhost:11434' })
+    case 'openai':
+      return openai(modelId)
+    case 'anthropic':
+      return anthropic(modelId)
+    case 'google':
+      return google(modelId)
+    case 'groq':
+      return groq(modelId)
+    default:
+      return ollama(modelId, { baseURL: config.ollamaUrl || 'http://localhost:11434' })
+  }
+}
+
+export async function getAiModel(task: 'analysis' | 'summarization' | 'drafting' | 'writing', event?: H3Event) {
+  const config = useRuntimeConfig(event)
+  let provider = (config.ai?.provider as Provider) || 'ollama'
+  let modelId = (config.ai?.model as string) || (config.ai?.models as Record<string, string>)?.[task] || 'llama3.2'
+  let ollamaUrl = (config.ai?.ollamaUrl as string) || process.env.OLLAMA_BASE_URL || 'http://localhost:11434'
+
+  if (event) {
+    const session = await getUserSession(event)
+    const aiSettings = (session as { aiSettings?: Record<string, string> })?.aiSettings
+    if (aiSettings) {
+      provider = (aiSettings.provider as Provider) || provider
+      modelId = aiSettings.model || modelId
+      ollamaUrl = aiSettings.ollamaUrl || ollamaUrl
+    }
+  }
+
+  return getProvider(provider, modelId, { ollamaUrl })
+}
