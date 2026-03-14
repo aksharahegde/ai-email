@@ -33,9 +33,8 @@ export function shouldReclassify(item: {
 export async function runClassification(itemId: string, event?: H3Event): Promise<void> {
   const db = getDb()
 
-  // Acquire concurrency lock
   db.update(smartInboxItems)
-    .set({ classifying: 1 })
+    .set({ classifying: 1, classifyDone: 0, classifyTotal: 0 })
     .where(eq(smartInboxItems.id, itemId))
     .run()
 
@@ -51,6 +50,12 @@ export async function runClassification(itemId: string, event?: H3Event): Promis
       .limit(scanScope)
       .all()
 
+    db.update(smartInboxItems)
+      .set({ classifyTotal: threadList.length })
+      .where(eq(smartInboxItems.id, itemId))
+      .run()
+
+    let done = 0
     for (const thread of threadList) {
       // firstMessage = message with lowest timestamp (original, not a reply)
       const firstMsg = db.select().from(messages)
@@ -118,11 +123,17 @@ export async function runClassification(itemId: string, event?: H3Event): Promis
           )
           .run()
       }
+
+      done++
+      db.update(smartInboxItems)
+        .set({ classifyDone: done })
+        .where(eq(smartInboxItems.id, itemId))
+        .run()
     }
   } finally {
     // Always release lock and update timestamp
     db.update(smartInboxItems)
-      .set({ classifying: 0, lastClassifiedAt: now() })
+      .set({ classifying: 0, classifyTotal: 0, classifyDone: 0, lastClassifiedAt: now() })
       .where(eq(smartInboxItems.id, itemId))
       .run()
   }

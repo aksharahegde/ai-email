@@ -37,11 +37,13 @@ const { data: threadsData, refresh } = useFetch<{
     classifiedAt: number
   }>
   syncing: boolean
+  classifyTotal: number
+  classifyDone: number
   lastClassifiedAt: number | null
 }>(
   () => `/api/smart-inbox/${id.value}/threads`,
   {
-    default: () => ({ threads: [], syncing: false, lastClassifiedAt: null }),
+    default: () => ({ threads: [], syncing: false, classifyTotal: 0, classifyDone: 0, lastClassifiedAt: null }),
     watch: [id]
   }
 )
@@ -59,6 +61,8 @@ const threads = computed<Array<MailThread & { summary: string }>>(() =>
   }))
 )
 const syncing = computed(() => threadsData.value?.syncing ?? false)
+const classifyTotal = computed(() => threadsData.value?.classifyTotal ?? 0)
+const classifyDone = computed(() => threadsData.value?.classifyDone ?? 0)
 const lastClassifiedAt = computed(() => threadsData.value?.lastClassifiedAt ?? null)
 
 // Poll while syncing
@@ -72,7 +76,7 @@ watch(syncing, (val) => {
         clearInterval(pollInterval!)
         pollInterval = null
       }
-    }, 5000)
+    }, 2000)
   }
 }, { immediate: true })
 
@@ -118,7 +122,8 @@ const selectedThread = computed(() =>
         <h2 class="font-semibold text-sm">{{ item?.name ?? '…' }}</h2>
         <div v-if="syncing" class="flex items-center gap-1 text-xs text-muted">
           <UIcon name="i-lucide-loader-2" class="animate-spin w-3 h-3" />
-          Syncing…
+          <span v-if="classifyTotal > 0">{{ classifyDone }}/{{ classifyTotal }}</span>
+          <span v-else>Syncing…</span>
         </div>
       </div>
       <UButton
@@ -144,6 +149,7 @@ const selectedThread = computed(() =>
       >
         <UIcon name="i-lucide-loader-2" class="animate-spin w-6 h-6" />
         <p class="text-sm">Classifying your emails…</p>
+        <p v-if="classifyTotal > 0" class="text-xs">{{ classifyDone }} of {{ classifyTotal }} processed</p>
       </div>
 
       <!-- No results after sync -->

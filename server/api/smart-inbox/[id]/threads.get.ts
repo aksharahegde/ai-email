@@ -59,6 +59,8 @@ export default defineEventHandler(async (event) => {
       classifiedAt: r.classifiedAt
     })),
     syncing: (currentItem?.classifying ?? 0) === 1,
+    classifyTotal: currentItem?.classifyTotal ?? 0,
+    classifyDone: currentItem?.classifyDone ?? 0,
     lastClassifiedAt: item.lastClassifiedAt
   }
 })

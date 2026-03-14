@@ -39,6 +39,8 @@ export const smartInboxItems = sqliteTable('smart_inbox_items', {
   summarizationPrompt: text('summarization_prompt'),       // nullable
   scanScope: integer('scan_scope').notNull().default(50),  // 50 | 200 | 500
   classifying: integer('classifying').notNull().default(0), // 0 | 1 (lock flag)
+  classifyTotal: integer('classify_total').notNull().default(0),
+  classifyDone: integer('classify_done').notNull().default(0),
   lastClassifiedAt: integer('last_classified_at'),          // unix timestamp | null
   createdAt: integer('created_at').notNull().default(0)
 })
