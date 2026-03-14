@@ -1,3 +1,4 @@
+import { generateText } from 'ai'
 import type { AiTag } from '../../../../app/types/mail'
 import { getAiModel } from '../../utils/ai'
 

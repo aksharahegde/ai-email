@@ -1,3 +1,4 @@
+import { generateText } from 'ai'
 import { getAiModel } from '../../utils/ai'
 
 export default defineEventHandler(async (event) => {

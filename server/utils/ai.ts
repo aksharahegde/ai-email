@@ -1,7 +1,5 @@
 import type { H3Event } from 'h3'
-import { generateText } from 'ai'
-import { ollama } from 'ollama-ai-provider'
-import { openai } from '@ai-sdk/openai'
+import { createOpenAI, openai } from '@ai-sdk/openai'
 import { anthropic } from '@ai-sdk/anthropic'
 import { google } from '@ai-sdk/google'
 import { groq } from '@ai-sdk/groq'
@@ -10,8 +8,13 @@ type Provider = 'ollama' | 'openai' | 'anthropic' | 'google' | 'groq'
 
 function getProvider(provider: Provider, modelId: string, config: Record<string, string>) {
   switch (provider) {
-    case 'ollama':
-      return ollama(modelId, { baseURL: config.ollamaUrl || 'http://localhost:11434' })
+    case 'ollama': {
+      const ollamaProvider = createOpenAI({
+        baseURL: `${config.ollamaUrl || 'http://localhost:11434'}/v1`,
+        apiKey: 'ollama',
+      })
+      return ollamaProvider(modelId)
+    }
     case 'openai':
       return openai(modelId)
     case 'anthropic':
@@ -20,8 +23,13 @@ function getProvider(provider: Provider, modelId: string, config: Record<string,
       return google(modelId)
     case 'groq':
       return groq(modelId)
-    default:
-      return ollama(modelId, { baseURL: config.ollamaUrl || 'http://localhost:11434' })
+    default: {
+      const defaultProvider = createOpenAI({
+        baseURL: `${config.ollamaUrl || 'http://localhost:11434'}/v1`,
+        apiKey: 'ollama',
+      })
+      return defaultProvider(modelId)
+    }
   }
 }
 
