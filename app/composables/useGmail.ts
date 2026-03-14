@@ -18,14 +18,15 @@ export function useGmailThreads(query?: { maxResults?: number, q?: string, label
 
 export function useGmailThread(threadId: Ref<string | null> | string | null) {
   const id = computed(() => (typeof threadId === 'object' && threadId !== null ? threadId.value : threadId))
-  const { data, error, refresh, status } = useFetch<{
-    id: string
-    messages: MailMessage[]
-    subject: string
-    participants: Array<{ email: string, name: string }>
-  }>(() => (id.value ? `/api/gmail/thread/${id.value}` : null), {
-    default: () => ({ id: '', messages: [], subject: '', participants: [] })
-  })
+  const emptyThread = () => ({ id: '', messages: [] as MailMessage[], subject: '', participants: [] as Array<{ email: string, name: string }> })
+  const { data, error, refresh, status } = useAsyncData(
+    () => `gmail-thread-${id.value}`,
+    () => {
+      if (!id.value) return emptyThread()
+      return $fetch<{ id: string, messages: MailMessage[], subject: string, participants: Array<{ email: string, name: string }> }>(`/api/gmail/thread/${id.value}`)
+    },
+    { watch: [id], default: emptyThread }
+  )
   const thread = computed(() => {
     const d = data.value
     if (!d) return null

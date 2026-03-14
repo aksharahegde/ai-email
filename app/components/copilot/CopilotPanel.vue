@@ -5,9 +5,13 @@ const props = defineProps<{
   threadId?: string | null
 }>()
 
-const { data: analysis, status: analysisStatus } = useFetch<ThreadAnalysis>(
-  () => (props.threadId ? `/api/ai/thread-analysis?threadId=${props.threadId}` : null),
-  { default: () => null }
+const { data: analysis, status: analysisStatus } = useAsyncData<ThreadAnalysis | null>(
+  () => `copilot-${props.threadId}`,
+  () => {
+    if (!props.threadId) return null
+    return $fetch<ThreadAnalysis>(`/api/ai/thread-analysis?threadId=${props.threadId}`)
+  },
+  { watch: [() => props.threadId], default: () => null }
 )
 </script>
 

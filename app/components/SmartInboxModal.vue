@@ -117,18 +117,18 @@ async function save() {
         </UFormField>
 
         <UFormField label="Scan scope">
-          <UButtonGroup class="w-full">
+          <div class="flex w-full">
             <UButton
               v-for="opt in scopeOptions"
               :key="opt.value"
               :variant="form.scanScope === opt.value ? 'solid' : 'outline'"
               color="neutral"
-              class="flex-1"
+              class="flex-1 rounded-none first:rounded-s-md last:rounded-e-md"
               @click="form.scanScope = opt.value as 50 | 200 | 500"
             >
               {{ opt.label }}
             </UButton>
-          </UButtonGroup>
+          </div>
         </UFormField>
 
         <p v-if="error" class="text-sm text-red-500">{{ error }}</p>
