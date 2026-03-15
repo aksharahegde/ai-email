@@ -12,16 +12,16 @@ const ollamaModels = ref<Array<{ name: string, size: number }>>([])
 const ollamaLoading = ref(false)
 const selectedModel = ref('')
 const saveLoading = ref(false)
+const saveSuccess = ref(false)
 
-const { data: savedSettings } = useFetch<{ provider?: string, model?: string, ollamaUrl?: string }>('/api/settings/ai')
-
-watch(savedSettings, (s) => {
-  if (s) {
+async function loadSettings() {
+  try {
+    const s = await $fetch<{ provider?: string, model?: string, ollamaUrl?: string }>('/api/settings/ai')
     if (s.provider) provider.value = s.provider as Provider
     if (s.model) selectedModel.value = s.model
     if (s.ollamaUrl) ollamaUrl.value = s.ollamaUrl
-  }
-}, { immediate: true })
+  } catch {}
+}
 
 async function checkOllamaStatus() {
   ollamaLoading.value = true
@@ -62,6 +62,7 @@ async function fetchOllamaModels() {
 
 async function saveSettings() {
   saveLoading.value = true
+  saveSuccess.value = false
   try {
     await $fetch('/api/settings/ai', {
       method: 'POST',
@@ -71,12 +72,15 @@ async function saveSettings() {
         ollamaUrl: ollamaUrl.value
       }
     })
+    saveSuccess.value = true
+    setTimeout(() => { saveSuccess.value = false }, 2000)
   } finally {
     saveLoading.value = false
   }
 }
 
-onMounted(() => {
+onMounted(async () => {
+  await loadSettings()
   if (provider.value === 'ollama') {
     checkOllamaStatus()
   }
@@ -218,10 +222,12 @@ watch(provider, (p) => {
       <UButton
         variant="solid"
         :loading="saveLoading"
+        :icon="saveSuccess ? 'i-lucide-check' : undefined"
+        :color="saveSuccess ? 'success' : 'primary'"
         data-testid="ai-settings-save"
         @click="saveSettings"
       >
-        Save Settings
+        {{ saveSuccess ? 'Saved' : 'Save Settings' }}
       </UButton>
     </div>
   </div>
