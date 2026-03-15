@@ -29,9 +29,18 @@ export default defineEventHandler(async (event) => {
     .orderBy(messages.timestamp)
     .all()
 
+  function bodyToText(html: string): string {
+    return html
+      .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '')
+      .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '')
+      .replace(/<[^>]+>/g, ' ')
+      .replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"')
+      .replace(/\s{2,}/g, ' ').trim()
+  }
+
   const threadContext = msgs.map((m) => {
     const from = (() => { try { return JSON.parse(m.from) as { name: string, email: string } } catch { return { name: '', email: '' } } })()
-    return `From: ${from.name} <${from.email}>\n${m.body.slice(0, 1500)}`
+    return `From: ${from.name} <${from.email}>\n${bodyToText(m.body).slice(0, 1500)}`
   }).join('\n\n---\n\n')
 
   const historyText = (body.history ?? []).map(h =>

@@ -6,6 +6,7 @@ definePageMeta({
 type Provider = 'ollama' | 'openai' | 'anthropic' | 'google' | 'groq'
 
 const provider = ref<Provider>('ollama')
+const apiKey = ref('')
 const ollamaUrl = ref('http://localhost:11434')
 const ollamaConnected = ref(false)
 const ollamaModels = ref<Array<{ name: string, size: number }>>([])
@@ -16,10 +17,11 @@ const saveSuccess = ref(false)
 
 async function loadSettings() {
   try {
-    const s = await $fetch<{ provider?: string, model?: string, ollamaUrl?: string }>('/api/settings/ai')
+    const s = await $fetch<{ provider?: string, model?: string, ollamaUrl?: string, apiKey?: string }>('/api/settings/ai')
     if (s.provider) provider.value = s.provider as Provider
     if (s.model) selectedModel.value = s.model
     if (s.ollamaUrl) ollamaUrl.value = s.ollamaUrl
+    if (s.apiKey) apiKey.value = s.apiKey
   } catch {}
 }
 
@@ -69,7 +71,8 @@ async function saveSettings() {
       body: {
         provider: provider.value,
         model: selectedModel.value || undefined,
-        ollamaUrl: ollamaUrl.value
+        ollamaUrl: ollamaUrl.value,
+        apiKey: apiKey.value || undefined
       }
     })
     saveSuccess.value = true
@@ -212,6 +215,7 @@ watch(provider, (p) => {
         </template>
         <UFormField label="API Key">
           <UInput
+            v-model="apiKey"
             type="password"
             placeholder="Enter API key"
             data-testid="ai-settings-api-key"

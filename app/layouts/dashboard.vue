@@ -4,6 +4,27 @@ const composeOpen = ref(false)
 const commandPaletteOpen = ref(false)
 const colorMode = useColorMode()
 
+// Copilot prompt settings
+const promptModalOpen = ref(false)
+const promptDraft = ref('')
+const promptSaving = ref(false)
+
+async function openPromptModal() {
+  const { prompt } = await $fetch<{ prompt: string }>('/api/settings/copilot')
+  promptDraft.value = prompt
+  promptModalOpen.value = true
+}
+
+async function savePrompt() {
+  promptSaving.value = true
+  try {
+    await $fetch('/api/settings/copilot', { method: 'POST', body: { prompt: promptDraft.value } })
+    promptModalOpen.value = false
+  } finally {
+    promptSaving.value = false
+  }
+}
+
 provide('mail:selectedThread', selectedThreadId as Ref<string | null>)
 provide('mail:composeOpen', composeOpen as Ref<boolean>)
 provide('mail:commandPaletteOpen', commandPaletteOpen)
@@ -82,14 +103,26 @@ defineShortcuts({
             <h3 class="font-medium text-sm text-muted">
               AI Copilot
             </h3>
-            <UButton
-              :icon="colorMode.value === 'dark' ? 'i-lucide-sun' : 'i-lucide-moon'"
-              color="neutral"
-              variant="ghost"
-              size="sm"
-              aria-label="Toggle theme"
-              @click="colorMode.preference = colorMode.value === 'dark' ? 'light' : 'dark'"
-            />
+            <div class="flex items-center gap-1">
+              <UTooltip text="Edit analysis prompt">
+                <UButton
+                  icon="i-lucide-sliders-horizontal"
+                  color="neutral"
+                  variant="ghost"
+                  size="sm"
+                  aria-label="Edit analysis prompt"
+                  @click="openPromptModal"
+                />
+              </UTooltip>
+              <UButton
+                :icon="colorMode.value === 'dark' ? 'i-lucide-sun' : 'i-lucide-moon'"
+                color="neutral"
+                variant="ghost"
+                size="sm"
+                aria-label="Toggle theme"
+                @click="colorMode.preference = colorMode.value === 'dark' ? 'light' : 'dark'"
+              />
+            </div>
           </div>
         </template>
 
@@ -102,4 +135,28 @@ defineShortcuts({
 
   <MailCompose v-model:open="composeOpen" />
   <AppCommandPalette v-model:open="commandPaletteOpen" />
+
+  <UModal
+    v-model:open="promptModalOpen"
+    title="Analysis Prompt"
+    description="Customize what the AI extracts when analyzing an email thread. Changing this clears cached analyses."
+  >
+    <template #body>
+      <UTextarea
+        v-model="promptDraft"
+        :rows="10"
+        class="w-full font-mono text-sm"
+      />
+    </template>
+    <template #footer>
+      <div class="flex justify-end gap-2">
+        <UButton color="neutral" variant="outline" @click="promptModalOpen = false">
+          Cancel
+        </UButton>
+        <UButton :loading="promptSaving" @click="savePrompt">
+          Save & Apply
+        </UButton>
+      </div>
+    </template>
+  </UModal>
 </template>

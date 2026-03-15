@@ -84,7 +84,7 @@ async function upsertThreadData(
 
     let body = ''
     if (msg.payload) {
-      body = extractBody(msg.payload).replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim()
+      body = extractBody(msg.payload)
     }
 
     db.insert(messages).values({
@@ -94,12 +94,12 @@ async function upsertThreadData(
       to: JSON.stringify([mTo]),
       cc: mCc ? JSON.stringify([parseEmailAddress(mCc)]) : null,
       subject: mSubject,
-      body: body.slice(0, 10000),
+      body: body.slice(0, 50000),
       timestamp: mDate ? Math.floor(new Date(mDate).getTime() / 1000) : now(),
       syncedAt: now()
     }).onConflictDoUpdate({
       target: messages.id,
-      set: { body: body.slice(0, 10000), syncedAt: now() }
+      set: { body: body.slice(0, 50000), syncedAt: now() }
     }).run()
   }
 }

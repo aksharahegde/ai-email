@@ -3,7 +3,7 @@ const { user, clear } = useUserSession()
 
 async function signOut() {
   await clear()
-  await navigateTo('/')
+  window.location.replace('/')
 }
 
 const menuItems = computed(() => [

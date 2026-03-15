@@ -3,8 +3,10 @@ import { generateObject } from 'ai'
 import { z } from 'zod'
 import type { ThreadAnalysis } from '../../../../app/types/mail'
 import { getAiModel } from '../../utils/ai'
+import { getSyncState } from '../../utils/sync'
 import { getDb } from '../../db'
 import { threads, messages, threadAiCache } from '../../db/schema'
+import { DEFAULT_ANALYSIS_PROMPT } from '../settings/copilot.get'
 
 const analysisSchema = z.object({
   summary: z.array(z.string()),
@@ -54,24 +56,27 @@ export default defineEventHandler(async (event): Promise<ThreadAnalysis> => {
 
   if (!msgs.length) return EMPTY
 
+  function bodyToText(html: string): string {
+    return html
+      .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '')
+      .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '')
+      .replace(/<[^>]+>/g, ' ')
+      .replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"')
+      .replace(/\s{2,}/g, ' ').trim()
+  }
+
   const threadText = msgs.map((m) => {
     const from = (() => { try { return JSON.parse(m.from) as { name: string, email: string } } catch { return { name: '', email: '' } } })()
-    return `From: ${from.name} <${from.email}>\n${m.body.slice(0, 2000)}`
+    return `From: ${from.name} <${from.email}>\n${bodyToText(m.body).slice(0, 2000)}`
   }).join('\n\n---\n\n')
 
   const model = await getAiModel('summarization', event)
+  const analysisPrompt = (await getSyncState('copilot_analysis_prompt')) ?? DEFAULT_ANALYSIS_PROMPT
 
   const { object } = await generateObject({
     model,
     schema: analysisSchema,
-    prompt: `Analyze this email thread and extract:
-1. summary: 3-5 bullet points summarizing the thread
-2. actionItems: tasks or to-dos with optional due dates
-3. questions: questions asked in the thread
-4. decisions: decisions made or agreed upon
-5. people: participants with name, email, and optional company/lastInteraction
-
-Thread:\n${threadText.slice(0, 12000)}`
+    prompt: `${analysisPrompt}\n\nThread:\n${threadText.slice(0, 12000)}`
   })
 
   const result = object as ThreadAnalysis
