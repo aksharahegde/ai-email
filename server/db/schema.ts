@@ -45,6 +45,17 @@ export const smartInboxItems = sqliteTable('smart_inbox_items', {
   createdAt: integer('created_at').notNull().default(0)
 })
 
+export const emailTasks = sqliteTable('email_tasks', {
+  id: text('id').primaryKey(),
+  threadId: text('thread_id').notNull().references(() => threads.id, { onDelete: 'cascade' }),
+  text: text('text').notNull(),
+  due: text('due'),
+  done: integer('done').notNull().default(0),
+  createdAt: integer('created_at').notNull().default(0)
+}, (table) => [
+  index('email_tasks_thread_id_idx').on(table.threadId)
+])
+
 export const smartInboxResults = sqliteTable('smart_inbox_results', {
   itemId: text('item_id').notNull().references(() => smartInboxItems.id, { onDelete: 'cascade' }),
   threadId: text('thread_id').notNull().references(() => threads.id, { onDelete: 'cascade' }),

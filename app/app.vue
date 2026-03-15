@@ -11,7 +11,7 @@ useHead({
   }
 })
 
-const title = 'Neuron Mail'
+const title = 'YuktiMail'
 const description = 'An AI-first email client. See work, actions, and decisions—not just messages.'
 
 useSeoMeta({

@@ -39,6 +39,7 @@ async function onSaved() {
 const mailNavItems = [
   [
     { type: 'label', label: 'Mail' },
+    { label: 'Tasks', icon: 'i-lucide-square-check-big', to: '/tasks' },
     { label: 'Sent', icon: 'i-lucide-send', to: '/sent' },
     { label: 'Drafts', icon: 'i-lucide-file-edit', to: '/drafts' },
     { label: 'Archive', icon: 'i-lucide-archive', to: '/archive' }

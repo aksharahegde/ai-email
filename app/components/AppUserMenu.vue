@@ -1,6 +1,11 @@
 <script setup lang="ts">
 const { user, clear } = useUserSession()
 
+async function signOut() {
+  await clear()
+  await navigateTo('/')
+}
+
 const menuItems = computed(() => [
   [
     { label: user.value?.name ?? 'Account', icon: 'i-lucide-user', disabled: true },
@@ -8,7 +13,7 @@ const menuItems = computed(() => [
     { label: 'Settings', icon: 'i-lucide-settings', to: '/settings' },
     { label: 'AI Settings', icon: 'i-lucide-sparkles', to: '/settings/ai' },
     { type: 'separator' },
-    { label: 'Sign out', icon: 'i-lucide-log-out', onSelect: () => clear() }
+    { label: 'Sign out', icon: 'i-lucide-log-out', onSelect: signOut }
   ]
 ])
 </script>

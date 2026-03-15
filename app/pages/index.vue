@@ -15,7 +15,7 @@ if (loggedIn.value) {
 <template>
   <div class="min-h-screen flex flex-col bg-white">
     <header class="border-b border-neutral-200 px-6 py-4">
-      <span class="font-bold tracking-tight text-neutral-900">Neuron Mail</span>
+      <span class="font-bold tracking-tight text-neutral-900">YuktiMail</span>
     </header>
 
     <div class="flex-1 flex items-center justify-center px-4">

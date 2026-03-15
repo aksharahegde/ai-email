@@ -29,7 +29,7 @@ defineShortcuts({
     >
       <template #header>
         <div class="p-4 flex items-center">
-          <span class="font-bold tracking-tight text-lg">Neuron Mail</span>
+          <span class="font-bold tracking-tight text-lg">YuktiMail</span>
         </div>
       </template>
 

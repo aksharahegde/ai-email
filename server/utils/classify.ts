@@ -1,4 +1,4 @@
-import { eq, desc, gt, and, sql } from 'drizzle-orm'
+import { eq, desc, and } from 'drizzle-orm'
 import { generateObject, generateText } from 'ai'
 import { z } from 'zod'
 import { getDb } from '../db'
@@ -18,16 +18,7 @@ export function shouldReclassify(item: {
   if (!item.lastClassifiedAt) return true   // never classified
 
   const fifteenMinutesAgo = now() - 15 * 60
-  if (item.lastClassifiedAt < fifteenMinutesAgo) return true
-
-  // Check if new threads arrived since last classification
-  const db = getDb()
-  const newer = db.select({ count: sql<number>`count(*)` })
-    .from(threads)
-    .where(gt(threads.syncedAt, item.lastClassifiedAt))
-    .get()
-
-  return (newer?.count ?? 0) > 0
+  return item.lastClassifiedAt < fifteenMinutesAgo
 }
 
 export async function runClassification(itemId: string, event?: H3Event): Promise<void> {

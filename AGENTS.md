@@ -10,7 +10,7 @@
 
 ## Learned Workspace Facts
 
-- Project is Neuron Mail, an AI-first Gmail client built with Nuxt 4, Nuxt UI v4, Tailwind, Pinia, and nuxt-auth-utils
+- Project is YuktiMail, an AI-first Gmail client built with Nuxt 4, Nuxt UI v4, Tailwind, Pinia, and nuxt-auth-utils
 - AI SDK stack: `ai` (Vercel), `@ai-sdk/openai`, `@ai-sdk/anthropic`, `@ai-sdk/google`, `@ai-sdk/groq`, `ollama-ai-provider`
 - Gmail is accessed via `googleapis` package; emails are sent through Gmail API, not SMTP
 - `nuxt-mail` and `nuxt-email-renderer` modules were removed because they crashed dev server without SMTP config and are unnecessary
