@@ -1,5 +1,6 @@
 import { migrate } from 'drizzle-orm/better-sqlite3/migrator'
 import { resolve } from 'node:path'
+import { eq } from 'drizzle-orm'
 import { getDb } from '../db'
 import { smartInboxItems } from '../db/schema'
 
@@ -9,13 +10,6 @@ const DEFAULT_SMART_INBOXES = [
     name: 'Waiting for Reply',
     classificationPrompt: 'Did I send this email or reply to it, and I am still waiting for a response from the other person?',
     summarizationPrompt: 'Summarize what I asked or sent and what response I am waiting for.',
-    scanScope: 200
-  },
-  {
-    id: 'default-tasks-from-email',
-    name: 'Tasks from Email',
-    classificationPrompt: 'Does this email contain a specific action item, task, or request that I need to complete?',
-    summarizationPrompt: 'Extract the action item or task I need to do, and who assigned it.',
     scanScope: 200
   },
   {
@@ -45,6 +39,9 @@ export default defineNitroPlugin(() => {
   const db = getDb()
   migrate(db, { migrationsFolder: resolve('server/db/migrations') })
   console.log('[db] migrations applied')
+
+  // Remove legacy "Tasks from Email" smart inbox — replaced by the dedicated /tasks page
+  db.delete(smartInboxItems).where(eq(smartInboxItems.id, 'default-tasks-from-email')).run()
 
   const now = Math.floor(Date.now() / 1000)
   for (const item of DEFAULT_SMART_INBOXES) {

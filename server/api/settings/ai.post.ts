@@ -1,5 +1,8 @@
+import { getSyncState, setSyncState } from '../../utils/sync'
+
 export default defineEventHandler(async (event) => {
-  const session = await requireUserSession(event)
+  await requireUserSession(event)
+
   const body = await readBody<{
     provider?: string
     model?: string
@@ -7,14 +10,17 @@ export default defineEventHandler(async (event) => {
     apiKey?: string
   }>(event)
 
+  const raw = await getSyncState('ai_settings')
+  const existing = raw ? (() => { try { return JSON.parse(raw) } catch { return {} } })() : {}
+
   const aiSettings = {
-    ...((session as { aiSettings?: Record<string, unknown> })?.aiSettings ?? {}),
+    ...existing,
     ...(body?.provider != null && { provider: body.provider }),
     ...(body?.model != null && { model: body.model }),
     ...(body?.ollamaUrl != null && { ollamaUrl: body.ollamaUrl }),
     ...(body?.apiKey != null && body.apiKey !== '' && { apiKey: body.apiKey })
   }
 
-  await setUserSession(event, { ...session, aiSettings })
+  await setSyncState('ai_settings', JSON.stringify(aiSettings))
   return aiSettings
 })
