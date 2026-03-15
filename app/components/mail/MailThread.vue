@@ -23,7 +23,10 @@ watch(
     try {
       const { summary } = await $fetch<{ summary: string[] }>('/api/ai/summarize', {
         method: 'POST',
-        body: { messages: msgs.map(m => ({ from: `${m.from.name} <${m.from.email}>`, body: m.body })) }
+        body: {
+          threadId: props.threadId,
+          messages: msgs.map(m => ({ from: `${m.from.name} <${m.from.email}>`, body: m.body }))
+        }
       })
       aiSummary.value = summary ?? []
     } catch {

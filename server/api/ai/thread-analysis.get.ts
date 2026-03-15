@@ -1,8 +1,10 @@
-import type { ThreadAnalysis } from '../../../../app/types/mail'
-import { getGmailClient, parseEmailAddress, getHeader, extractBody } from '../../utils/gmail'
-import { getAiModel } from '../../utils/ai'
+import { eq, and } from 'drizzle-orm'
 import { generateObject } from 'ai'
 import { z } from 'zod'
+import type { ThreadAnalysis } from '../../../../app/types/mail'
+import { getAiModel } from '../../utils/ai'
+import { getDb } from '../../db'
+import { threads, messages, threadAiCache } from '../../db/schema'
 
 const analysisSchema = z.object({
   summary: z.array(z.string()),
@@ -17,31 +19,46 @@ const analysisSchema = z.object({
   }))
 })
 
+const EMPTY: ThreadAnalysis = { summary: [], actionItems: [], questions: [], decisions: [], people: [] }
+
 export default defineEventHandler(async (event): Promise<ThreadAnalysis> => {
   const threadId = getQuery(event).threadId as string
-  if (!threadId) {
-    throw createError({ statusCode: 400, message: 'threadId required' })
+  if (!threadId) throw createError({ statusCode: 400, message: 'threadId required' })
+
+  const db = getDb()
+
+  const thread = db.select({ lastMessageAt: threads.lastMessageAt })
+    .from(threads).where(eq(threads.id, threadId)).get()
+
+  if (!thread) throw createError({ statusCode: 404, message: 'Thread not found' })
+
+  // Return cached result if still valid (same lastMessageAt = no new replies)
+  const cached = db.select({ data: threadAiCache.data })
+    .from(threadAiCache)
+    .where(and(
+      eq(threadAiCache.threadId, threadId),
+      eq(threadAiCache.type, 'analysis'),
+      eq(threadAiCache.lastMessageAt, thread.lastMessageAt)
+    ))
+    .get()
+
+  if (cached) {
+    return JSON.parse(cached.data) as ThreadAnalysis
   }
 
-  const gmail = await getGmailClient(event)
-  const thread = await gmail.users.threads.get({
-    userId: 'me',
-    id: threadId,
-    format: 'full'
-  })
+  // Read messages from local DB
+  const msgs = db.select().from(messages)
+    .where(eq(messages.threadId, threadId))
+    .orderBy(messages.timestamp)
+    .all()
 
-  const messages = (thread.data.messages ?? []).map((msg) => {
-    const headers = msg.payload?.headers ?? []
-    const from = parseEmailAddress(getHeader(headers, 'From'))
-    const body = extractBody(msg.payload!)
-    return { from: `${from.name} <${from.email}>`, body: body.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 2000) }
-  })
+  if (!msgs.length) return EMPTY
 
-  if (messages.length === 0) {
-    return { summary: [], actionItems: [], questions: [], decisions: [], people: [] }
-  }
+  const threadText = msgs.map((m) => {
+    const from = (() => { try { return JSON.parse(m.from) as { name: string, email: string } } catch { return { name: '', email: '' } } })()
+    return `From: ${from.name} <${from.email}>\n${m.body.slice(0, 2000)}`
+  }).join('\n\n---\n\n')
 
-  const threadText = messages.map(m => `From: ${m.from}\n${m.body}`).join('\n\n---\n\n')
   const model = await getAiModel('summarization', event)
 
   const { object } = await generateObject({
@@ -57,5 +74,19 @@ export default defineEventHandler(async (event): Promise<ThreadAnalysis> => {
 Thread:\n${threadText.slice(0, 12000)}`
   })
 
-  return object as ThreadAnalysis
+  const result = object as ThreadAnalysis
+
+  // Store in cache
+  db.insert(threadAiCache).values({
+    threadId,
+    type: 'analysis',
+    lastMessageAt: thread.lastMessageAt,
+    data: JSON.stringify(result),
+    createdAt: Math.floor(Date.now() / 1000)
+  }).onConflictDoUpdate({
+    target: [threadAiCache.threadId, threadAiCache.type],
+    set: { lastMessageAt: thread.lastMessageAt, data: JSON.stringify(result), createdAt: Math.floor(Date.now() / 1000) }
+  }).run()
+
+  return result
 })

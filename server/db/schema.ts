@@ -45,6 +45,16 @@ export const smartInboxItems = sqliteTable('smart_inbox_items', {
   createdAt: integer('created_at').notNull().default(0)
 })
 
+export const threadAiCache = sqliteTable('thread_ai_cache', {
+  threadId: text('thread_id').notNull().references(() => threads.id, { onDelete: 'cascade' }),
+  type: text('type').notNull(),              // 'summary' | 'analysis'
+  lastMessageAt: integer('last_message_at').notNull(),
+  data: text('data').notNull(),              // JSON
+  createdAt: integer('created_at').notNull().default(0)
+}, (table) => [
+  primaryKey({ columns: [table.threadId, table.type] })
+])
+
 export const emailTasks = sqliteTable('email_tasks', {
   id: text('id').primaryKey(),
   threadId: text('thread_id').notNull().references(() => threads.id, { onDelete: 'cascade' }),
@@ -54,6 +64,16 @@ export const emailTasks = sqliteTable('email_tasks', {
   createdAt: integer('created_at').notNull().default(0)
 }, (table) => [
   index('email_tasks_thread_id_idx').on(table.threadId)
+])
+
+export const actionItemStates = sqliteTable('action_item_states', {
+  threadId: text('thread_id').notNull().references(() => threads.id, { onDelete: 'cascade' }),
+  itemText: text('item_text').notNull(),
+  dismissed: integer('dismissed').notNull().default(0), // 1 = hidden from copilot
+  taskId: text('task_id'),                              // set when added to tasks list
+  createdAt: integer('created_at').notNull().default(0)
+}, (table) => [
+  primaryKey({ columns: [table.threadId, table.itemText] })
 ])
 
 export const smartInboxResults = sqliteTable('smart_inbox_results', {
