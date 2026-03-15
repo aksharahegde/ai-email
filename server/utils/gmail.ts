@@ -39,16 +39,24 @@ export function parseEmailAddress(header: string | undefined): { name: string, e
   return { name: header, email: header }
 }
 
-export function extractBody(payload: { body?: { data?: string }, parts?: Array<{ body?: { data?: string }, mimeType?: string }> }): string {
+export function extractBody(payload: { body?: { data?: string }, mimeType?: string, parts?: Array<{ body?: { data?: string }, mimeType?: string, parts?: any[] }> }): string {
+  // Recursively search multipart payloads
+  if (payload.parts?.length) {
+    const textPart = payload.parts.find(p => p.mimeType === 'text/plain')
+    const htmlPart = payload.parts.find(p => p.mimeType === 'text/html')
+    const multipart = payload.parts.find(p => p.mimeType?.startsWith('multipart/'))
+
+    if (textPart?.body?.data) return decodeBase64Url(textPart.body.data)
+    if (multipart) return extractBody(multipart)
+    if (htmlPart?.body?.data) return decodeBase64Url(htmlPart.body.data)
+    const fallback = payload.parts[0]
+    if (fallback?.body?.data) return decodeBase64Url(fallback.body.data)
+  }
+
   if (payload.body?.data) {
     return decodeBase64Url(payload.body.data)
   }
-  const htmlPart = payload.parts?.find(p => p.mimeType === 'text/html')
-  const textPart = payload.parts?.find(p => p.mimeType === 'text/plain')
-  const part = htmlPart ?? textPart ?? payload.parts?.[0]
-  if (part?.body?.data) {
-    return decodeBase64Url(part.body.data)
-  }
+
   return ''
 }
 

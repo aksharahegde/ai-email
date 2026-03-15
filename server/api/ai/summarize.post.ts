@@ -38,7 +38,20 @@ export default defineEventHandler(async (event) => {
   }
 
   const model = await getAiModel('summarization', event)
-  const threadText = body.messages.map(m => `From: ${m.from}\n${m.body}`).join('\n\n---\n\n')
+  const threadText = body.messages.map(m => {
+    const plain = m.body
+      .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '')
+      .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '')
+      .replace(/<[^>]+>/g, ' ')
+      .replace(/&nbsp;/g, ' ')
+      .replace(/&amp;/g, '&')
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>')
+      .replace(/&quot;/g, '"')
+      .replace(/\s{2,}/g, ' ')
+      .trim()
+    return `From: ${m.from}\n${plain}`
+  }).join('\n\n---\n\n')
 
   const { text } = await generateText({
     model,

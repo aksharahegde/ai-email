@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { MailMessage as MailMessageType } from '~/types/mail'
 
-defineProps<{
+const props = defineProps<{
   message: MailMessageType
 }>()
 
@@ -11,6 +11,13 @@ function formatDateTime(date: Date) {
     timeStyle: 'short'
   })
 }
+
+const isHtml = computed(() => /<[a-z][\s\S]*>/i.test(props.message.body))
+
+const renderedBody = computed(() => {
+  if (isHtml.value) return props.message.body
+  return props.message.body.replace(/\n/g, '<br>')
+})
 </script>
 
 <template>
@@ -27,9 +34,21 @@ function formatDateTime(date: Date) {
           {{ formatDateTime(message.timestamp) }}
         </span>
       </div>
+      <iframe
+        v-if="isHtml"
+        :srcdoc="renderedBody"
+        sandbox="allow-same-origin"
+        class="mt-2 w-full border-0 min-h-40"
+        style="height: 0"
+        @load="(e) => {
+          const iframe = e.target as HTMLIFrameElement
+          iframe.style.height = iframe.contentDocument?.body?.scrollHeight + 'px'
+        }"
+      />
       <div
+        v-else
         class="mt-2 text-sm prose dark:prose-invert max-w-none"
-        v-html="message.body.replace(/\n/g, '<br>')"
+        v-html="renderedBody"
       />
     </div>
   </div>
