@@ -1,60 +1,56 @@
-# Nuxt Starter Template
+# YuktiMail - AI-first Gmail Client
 
-[![Nuxt UI](https://img.shields.io/badge/Made%20with-Nuxt%20UI-00DC82?logo=nuxt&labelColor=020420)](https://ui.nuxt.com)
+YuktiMail is an open-source, AI-first Gmail client that turns long email threads into actionable context. Instead of reading everything line-by-line, you get summaries, tasks, and decisions extracted automatically, plus an AI chat for deeper questions.
 
-Use this template to get started with [Nuxt UI](https://ui.nuxt.com) quickly.
+GitHub: https://github.com/aksharahegde/ai-email
 
-- [Live demo](https://starter-template.nuxt.dev/)
-- [Documentation](https://ui.nuxt.com/docs/getting-started/installation/nuxt)
+## What you can do
 
-<a href="https://starter-template.nuxt.dev/" target="_blank">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://ui.nuxt.com/assets/templates/nuxt/starter-dark.png">
-    <source media="(prefers-color-scheme: light)" srcset="https://ui.nuxt.com/assets/templates/nuxt/starter-light.png">
-    <img alt="Nuxt Starter Template" src="https://ui.nuxt.com/assets/templates/nuxt/starter-light.png" width="830" height="466">
-  </picture>
-</a>
+- AI Copilot panel that analyzes the currently selected email thread.
+- Thread insights including: a short summary, action items (to-dos), questions, decisions, and key people.
+- Ask follow-up questions in a lightweight chat tied to the selected thread.
+- AI Priority view that surfaces threads tagged as `action-required`, `question`, or `decision`.
+- Smart Inbox: create named, AI-powered inboxes using your own classification and summarization prompts, then sync and browse matched emails.
+- Tasks from Email: extract tasks/to-dos from your inbox and mark them done.
+- AI-assisted compose: generate an AI draft and improve writing using "make shorter", "make professional", and "make clearer".
+- AI configuration: choose an AI provider/model (including Ollama) from the Settings area.
 
-> The starter template for Vue is on https://github.com/nuxt-ui-templates/starter-vue.
+## Open source
 
-## Quick Start
+YuktiMail is MIT licensed. See [`LICENSE`](./LICENSE).
 
-```bash [Terminal]
-npm create nuxt@latest -- -t ui
-```
+## Local setup (required)
 
-## Deploy your own
+### 1. Configure environment variables
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-name=starter&repository-url=https%3A%2F%2Fgithub.com%2Fnuxt-ui-templates%2Fstarter&demo-image=https%3A%2F%2Fui.nuxt.com%2Fassets%2Ftemplates%2Fnuxt%2Fstarter-dark.png&demo-url=https%3A%2F%2Fstarter-template.nuxt.dev%2F&demo-title=Nuxt%20Starter%20Template&demo-description=A%20minimal%20template%20to%20get%20started%20with%20Nuxt%20UI.)
+Copy `.env.example` to `.env` and fill in:
 
-## Setup
+- `NUXT_SESSION_PASSWORD` (required; at least 32 characters)
+- `NUXT_OAUTH_GOOGLE_CLIENT_ID` (required)
+- `NUXT_OAUTH_GOOGLE_CLIENT_SECRET` (required)
 
-Make sure to install the dependencies:
+### 2. Install dependencies
 
 ```bash
 pnpm install
 ```
 
-## Development Server
-
-Start the development server on `http://localhost:3000`:
+### 3. Run the app
 
 ```bash
-pnpm dev
+bun run dev
 ```
 
-## Production
+Open the app in your browser. (The default dev server URL is shown in terminal output.)
 
-Build the application for production:
+## AI providers (optional)
 
-```bash
-pnpm build
-```
+AI provider/model selection is configurable in the UI under `Settings -> AI Configuration`.
 
-Locally preview production build:
+Ollama defaults to `http://localhost:11434` with a default model of `llama3.2` (you can override via Settings, or by setting environment variables like `OLLAMA_BASE_URL`, `AI_PROVIDER`, and `AI_MODEL`).
 
-```bash
-pnpm preview
-```
+## Gmail sync + local cache
 
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
+YuktiMail uses a local SQLite cache (default: `.data/email.db`) for fast loading, and it syncs with Gmail via the app's sync flows (for example, using the Inbox "Refresh" action).
+
+On startup, the app applies DB migrations automatically and seeds the default Smart Inbox items.
